@@ -12,6 +12,7 @@ Please submit a word:
   <p><button type="submit">Submit</button></p>
 </form>
 
+<script src="/js/token.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("word-form");
@@ -24,20 +25,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const newContent = `${word} (${date})\n`;
 
     try {
+      const token = window.GITHUB_TOKEN; // <-- read injected secret
+
       // 1. Fetch the current file from GitHub
       const getFile = await fetch(
         "https://api.github.com/repos/manh-td/new-words/contents/words.txt",
         {
           headers: {
             Accept: "application/vnd.github+json",
-            Authorization: "Bearer token"
+            Authorization: `Bearer ${token}`
           }
         }
       );
 
-      if (!getFile.ok) {
-        throw new Error("Failed to fetch file from GitHub");
-      }
+      if (!getFile.ok) throw new Error("Failed to fetch file from GitHub");
 
       const fileData = await getFile.json();
       const sha = fileData.sha;
@@ -53,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
           method: "PUT",
           headers: {
             Accept: "application/vnd.github+json",
-            Authorization: "Bearer token"
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
             message: `Add word: ${word}`,
