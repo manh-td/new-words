@@ -21,39 +21,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const word = form.querySelector('[name="word"]').value;
     const date = new Date().toISOString();
-    const newContent = `${word} (${date})\\n`;
+    const newContent = `${word} (${date})\n`;
 
     try {
-      // 1. Get the current file from GitHub
+      // 1. Fetch the current file from GitHub
       const getFile = await fetch(
         "https://api.github.com/repos/manh-td/new-words/contents/words.txt",
         {
           headers: {
-            "Accept": "application/vnd.github+json",
-            "Authorization": "Bearer YOUR_PERSONAL_ACCESS_TOKEN" // ⚠️ insecure if exposed
+            Accept: "application/vnd.github+json",
+            Authorization: "Bearer token"
           }
         }
       );
 
-      let sha = null;
-      let oldContent = "";
-      if (getFile.ok) {
-        const fileData = await getFile.json();
-        sha = fileData.sha;
-        oldContent = atob(fileData.content);
+      if (!getFile.ok) {
+        throw new Error("Failed to fetch file from GitHub");
       }
 
-      // 2. Prepare updated file content
+      const fileData = await getFile.json();
+      const sha = fileData.sha;
+      const oldContent = atob(fileData.content);
+
+      // 2. Append new word
       const updatedContent = btoa(unescape(encodeURIComponent(oldContent + newContent)));
 
-      // 3. Commit the change via GitHub API
+      // 3. Commit the updated file
       const commit = await fetch(
         "https://api.github.com/repos/manh-td/new-words/contents/words.txt",
         {
           method: "PUT",
           headers: {
-            "Accept": "application/vnd.github+json",
-            "Authorization": "Bearer Token" // ⚠️ insecure if exposed
+            Accept: "application/vnd.github+json",
+            Authorization: "Bearer token"
           },
           body: JSON.stringify({
             message: `Add word: ${word}`,
@@ -64,7 +64,8 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
       if (!commit.ok) {
-        throw new Error("Failed to commit file");
+        const error = await commit.json();
+        throw new Error("Commit failed: " + JSON.stringify(error));
       }
 
       alert("Word submitted and saved!");
