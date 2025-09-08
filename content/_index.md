@@ -6,11 +6,13 @@ layout = "page"
 
 Please submit a word:
 
-<form id="word-form">
+<form id="word-form" name="word" method="POST" data-netlify="true">
+  <input type="hidden" name="form-name" value="word">
   <p><label>New Word: <input type="text" name="word" required></label></p>
   <p><button type="submit">Submit</button></p>
 </form>
 
+<script src="/js/token.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("word-form");
@@ -19,33 +21,59 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
 
     const word = form.querySelector('[name="word"]').value;
+    const date = new Date().toISOString();
+    const newContent = `${word} (${date})\n`;
 
     try {
-      const res = await fetch(
-        "https://api.github.com/repos/manh-td/new-words/actions/workflows/add-word.yml/dispatches",
+      const token = window.GITHUB_TOKEN; // <-- read injected secret
+
+      // 1. Fetch the current file from GitHub
+      const getFile = await fetch(
+        "https://api.github.com/repos/manh-td/new-words/contents/words.txt",
         {
-          method: "POST",
           headers: {
-            "Accept": "application/vnd.github+json",
-            "Authorization": "Bearer " + window.GITHUB_TOKEN, // still injected in build step
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (!getFile.ok) throw new Error("Failed to fetch file from GitHub");
+
+      const fileData = await getFile.json();
+      const sha = fileData.sha;
+      const oldContent = atob(fileData.content);
+
+      // 2. Append new word
+      const updatedContent = btoa(unescape(encodeURIComponent(oldContent + newContent)));
+
+      // 3. Commit the updated file
+      const commit = await fetch(
+        "https://api.github.com/repos/manh-td/new-words/contents/words.txt",
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({
-            ref: "main",
-            inputs: { word: word }
+            message: `Add word: ${word}`,
+            content: updatedContent,
+            sha: sha
           })
         }
       );
 
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error("Failed: " + JSON.stringify(err));
+      if (!commit.ok) {
+        const error = await commit.json();
+        throw new Error("Commit failed: " + JSON.stringify(error));
       }
 
-      alert("Submitted! It will appear soon after workflow runs.");
+      alert("Word submitted and saved!");
       form.reset();
     } catch (error) {
       console.error("Error submitting word:", error);
-      alert("Something went wrong.");
+      alert("Something went wrong, please try again.");
     }
   });
 });
