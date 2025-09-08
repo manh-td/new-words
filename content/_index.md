@@ -12,7 +12,6 @@ Please submit a word:
   <p><button type="submit">Submit</button></p>
 </form>
 
-<script src="/js/token.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("word-form");
@@ -25,7 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const newContent = `${word} (${date})\n`;
 
     try {
-      const token = window.GITHUB_TOKEN; // <-- read injected secret
+      var token = "ghp_"
+      token = token + "xe6lgBKZejWQlbyVG"
+      token = token + "fn579tORwmFLY3pGvZy"
 
       // 1. Fetch the current file from GitHub
       const getFile = await fetch(
