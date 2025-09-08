@@ -1,27 +1,13 @@
-+++
-title = "New Words"
-draft = false
-layout = "page"
-+++
-
-Please submit a word:
-
-<form id="word-form" name="word" method="POST" data-netlify="true">
-  <input type="hidden" name="form-name" value="word">
-  <p><label>New Word: <input type="text" name="word" required></label></p>
-  <p><button type="submit">Submit</button></p>
-</form>
-
-<script>
 document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("word-form");
+  const form = document.querySelector("form");
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const word = form.querySelector('[name="word"]').value;
     const date = new Date().toISOString();
-    const newContent = `${word} (${date})\\n`;
+
+    const newContent = `${word} (${date})\n`;
 
     try {
       // 1. Get the current file from GitHub
@@ -30,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         {
           headers: {
             "Accept": "application/vnd.github+json",
-            "Authorization": "Bearer YOUR_PERSONAL_ACCESS_TOKEN" // ⚠️ insecure if exposed
+            "Authorization": "Bearer YOUR_PERSONAL_ACCESS_TOKEN" // ⚠️ insecure in frontend
           }
         }
       );
@@ -39,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
       let oldContent = "";
       if (getFile.ok) {
         const fileData = await getFile.json();
-        sha = fileData.sha;
+        sha = fileData.sha; // needed to update existing file
         oldContent = atob(fileData.content);
       }
 
@@ -53,7 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
           method: "PUT",
           headers: {
             "Accept": "application/vnd.github+json",
-            "Authorization": "Bearer Token" // ⚠️ insecure if exposed
+            "Authorization": "Bearer YOUR_PERSONAL_ACCESS_TOKEN", // ⚠️ insecure in frontend
           },
           body: JSON.stringify({
             message: `Add word: ${word}`,
@@ -69,10 +55,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
       alert("Word submitted and saved!");
       form.reset();
+
     } catch (error) {
       console.error("Error submitting word:", error);
       alert("Something went wrong, please try again.");
     }
   });
 });
-</script>
