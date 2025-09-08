@@ -46,22 +46,21 @@ jobs:
       # 4. Inject GitHub Token into site
       - name: Inject GitHub Token into site
         run: |
-          mkdir -p ./src/assets/js
-          echo "window.GITHUB_TOKEN='${{ secrets.GH_PAT }}'" > ./src/assets/js/token.js
+          mkdir -p ./assets/js
+          echo "window.GITHUB_TOKEN='${{ secrets.GH_PAT }}'" > ./assets/js/token.js
 
       # 5. Build Hugo site
       - name: Build with Hugo
         env:
           HUGO_CACHE_DIR: ${{ runner.temp }}/hugo_cache
           HUGO_ENV: production
-        working-directory: src
         run: hugo --minify --gc --baseURL "${{ steps.pages.outputs.base_url }}/"
 
       # 6. Upload artifact for Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: src/public
+          path: ./public
 
   deploy:
     environment:
