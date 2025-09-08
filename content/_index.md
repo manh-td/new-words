@@ -1,15 +1,12 @@
 +++
-title = "New Words"
+title = "It doesn't matter when we start. It doesn't matter where we start. All that matters is that we start."
 draft = false
 layout = "page"
 +++
 
-Please submit a word:
-
 <form id="word-form" name="word" method="POST" data-netlify="true">
   <input type="hidden" name="form-name" value="word">
-  <p><label>New Word: <input type="text" name="word" required></label></p>
-  <p><button type="submit">Submit</button></p>
+  <p><label>New Word: <input type="text" name="word" required></label><button type="submit">Submit</button></p>
 </form>
 
 <script>
