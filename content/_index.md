@@ -1,5 +1,5 @@
 +++
-title = "It doesn't matter when we start.\nIt doesn't matter where we start.\nAll that matters is that we start."
+title = "All that matters is that we start"
 draft = false
 layout = "page"
 +++
@@ -9,9 +9,15 @@ layout = "page"
   <p><label>New Word: <input type="text" name="word" required></label><button type="submit">Submit</button></p>
 </form>
 
+<!-- Button to open a new link -->
+<p>
+  <button id="open-link-button" type="button">View Word List</button>
+</p>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("word-form");
+  const openLinkButton = document.getElementById("open-link-button");
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -73,6 +79,11 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Error submitting word:", error);
       alert("Something went wrong, please try again.");
     }
+  });
+
+  // Handle button click to open link in new tab
+  openLinkButton.addEventListener("click", function () {
+    window.open("https://github.com/manh-td/new-words/blob/main/words.txt", "_blank");
   });
 });
 </script>
