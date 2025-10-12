@@ -11,13 +11,15 @@ layout = "page"
 
 <!-- Button to open a new link -->
 <p>
-  <button id="open-link-button" type="button">View Word List</button>
+  <button id="view-word-list-button" type="button">View Word List</button>
+  <button id="view-extracted-word-list-button" type="button">View Extracted Word List</button>
 </p>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("word-form");
-  const openLinkButton = document.getElementById("open-link-button");
+  const viewWordListButton = document.getElementById("view-word-list-button");
+  const viewExtractedWordListButton = document.getElementById("view-extracted-word-list-button");
 
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -82,8 +84,12 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Handle button click to open link in new tab
-  openLinkButton.addEventListener("click", function () {
+  viewWordListButton.addEventListener("click", function () {
     window.open("https://github.com/manh-td/new-words/blob/main/words.txt", "_blank");
+  });
+
+  viewExtractedWordListButton.addEventListener("click", function () {
+    window.open("https://github.com/manh-td/new-words-extraction/blob/main/output.csv", "_blank");
   });
 });
 </script>
