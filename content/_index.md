@@ -1,5 +1,5 @@
 +++
-title = "It doesn't matter when we start. It doesn't matter where we start. All that matters is that we start."
+title = "It doesn't matter when we start.\nIt doesn't matter where we start.\nAll that matters is that we start."
 draft = false
 layout = "page"
 +++
